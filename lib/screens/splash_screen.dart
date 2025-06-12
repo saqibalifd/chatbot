@@ -1,13 +1,14 @@
-// ignore_for_file: prefer_const_constructors_in_immutables
-
 import 'dart:async';
 
 import 'package:chatbot/constants/app_colors.dart';
+import 'package:chatbot/constants/app_images.dart';
+import 'package:chatbot/screens/chat_screen.dart';
 import 'package:chatbot/screens/onboarding_screen.dart';
 import 'package:flutter/material.dart';
+import 'package:get_storage/get_storage.dart';
 
 class SplashScreen extends StatefulWidget {
-  SplashScreen({super.key});
+  const SplashScreen({super.key}); // Made constructor const
 
   @override
   State<SplashScreen> createState() => _SplashScreenState();
@@ -18,10 +19,20 @@ class _SplashScreenState extends State<SplashScreen> {
   void initState() {
     super.initState();
     Timer(Duration(seconds: 3), () {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => OnboardingScreen()),
-      );
+      final box = GetStorage();
+
+      final bool? isOnBoardingPlayed = box.read('isOnBoardingPlayed');
+      if (isOnBoardingPlayed == true) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => ChatScreen()),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => OnboardingScreen()),
+        );
+      }
     });
   }
 
@@ -34,7 +45,7 @@ class _SplashScreenState extends State<SplashScreen> {
       backgroundColor: AppColors.blue,
       body: Center(
         child: Image.asset(
-          'assets/images/splashscreen.png',
+          AppImages.splashImage,
           height: height * 0.6,
           width: width * 0.6,
         ),

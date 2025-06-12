@@ -1,5 +1,6 @@
 import 'package:chatbot/constants/app_colors.dart';
 import 'package:chatbot/provider/message_provider.dart';
+import 'package:chatbot/widgets/empty_chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:chat_bubbles/chat_bubbles.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -50,53 +51,58 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: _messageAppBar(width),
               ),
               Expanded(
-                child: ListView.builder(
-                  shrinkWrap: true,
-                  controller: _scrollController,
-                  physics: const BouncingScrollPhysics(),
-                  padding: const EdgeInsets.all(16.0),
-                  itemCount: messageProvider.messages.length,
-                  itemBuilder: (context, index) {
-                    final message = messageProvider.messages[index];
-                    final isUser = message['isUser'];
-                    final time = message['time'];
+                child: messageProvider.messages.isEmpty
+                    ? EmptyChatWidget()
+                    : ListView.builder(
+                        shrinkWrap: true,
+                        controller: _scrollController,
+                        physics: const BouncingScrollPhysics(),
+                        padding: const EdgeInsets.all(16.0),
+                        itemCount: messageProvider.messages.length,
+                        itemBuilder: (context, index) {
+                          final message = messageProvider.messages[index];
+                          final isUser = message['isUser'];
+                          final time = message['time'];
 
-                    return Align(
-                      alignment:
-                          isUser ? Alignment.centerRight : Alignment.centerLeft,
-                      child: Column(
-                        crossAxisAlignment: isUser
-                            ? CrossAxisAlignment.end
-                            : CrossAxisAlignment.start,
-                        children: [
-                          BubbleSpecialOne(
-                            isSender: isUser,
-                            color:
-                                isUser ? Colors.blue : const Color(0XFFE5E5E5),
-                            seen: true,
-                            text: message['text'],
-                            tail: true,
-                            textStyle: const TextStyle(
-                              fontSize: 14.0,
-                              color: Color(0XFF000000),
-                              fontWeight: FontWeight.w400,
+                          return Align(
+                            alignment: isUser
+                                ? Alignment.centerRight
+                                : Alignment.centerLeft,
+                            child: Column(
+                              crossAxisAlignment: isUser
+                                  ? CrossAxisAlignment.end
+                                  : CrossAxisAlignment.start,
+                              children: [
+                                BubbleSpecialOne(
+                                  isSender: isUser,
+                                  color: isUser
+                                      ? Colors.blue
+                                      : const Color(0XFFEEEEEE),
+                                  seen: true,
+                                  text: message['text'],
+                                  tail: true,
+                                  textStyle: const TextStyle(
+                                    fontSize: 14.0,
+                                    color: Color(0XFF000000),
+                                    fontWeight: FontWeight.w400,
+                                  ),
+                                ),
+                                Padding(
+                                  padding: const EdgeInsets.only(
+                                      right: 10, left: 20),
+                                  child: Text(
+                                    time,
+                                    style: const TextStyle(
+                                      fontSize: 10,
+                                      color: Color(0XFF808080),
+                                    ),
+                                  ),
+                                )
+                              ],
                             ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.only(right: 10, left: 20),
-                            child: Text(
-                              time,
-                              style: const TextStyle(
-                                fontSize: 10,
-                                color: Color(0XFF808080),
-                              ),
-                            ),
-                          )
-                        ],
+                          );
+                        },
                       ),
-                    );
-                  },
-                ),
               ),
 
               // Typing indicator
