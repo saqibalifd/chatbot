@@ -36,18 +36,19 @@ class _ChatScreenState extends State<ChatScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final size = MediaQuery.of(context).size;
+    final height = size.height;
+    final width = size.width;
     return Scaffold(
-      backgroundColor: Colors.white,
-      appBar: AppBar(
-        scrolledUnderElevation: 0,
-        excludeHeaderSemantics: true,
-        title: const Text("Chat Bot"),
-        backgroundColor: Colors.white,
-      ),
       body: Consumer<MessageProvider>(
         builder: (context, messageProvider, child) {
           return Column(
             children: [
+              Padding(
+                padding: EdgeInsets.only(
+                    top: height * .03, left: width * .05, right: width * .05),
+                child: _messageAppBar(width),
+              ),
               Expanded(
                 child: ListView.builder(
                   shrinkWrap: true,
@@ -118,53 +119,33 @@ class _ChatScreenState extends State<ChatScreen> {
 
               // Text field + Send button
               Padding(
-                padding: const EdgeInsets.all(12.0),
-                child: Row(
-                  children: [
-                    Expanded(
-                      child: TextFormField(
-                        controller: messageController,
-                        decoration: InputDecoration(
-                          hintText: "Type a message...",
-                          hintStyle: const TextStyle(color: Colors.grey),
-                          filled: true,
-                          fillColor: Colors.white,
-                          contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16, vertical: 12),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide: const BorderSide(color: Colors.grey),
-                          ),
-                          focusedBorder: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(10),
-                            borderSide:
-                                const BorderSide(color: Colors.green, width: 2),
-                          ),
-                          suffixIcon: IconButton(
-                            onPressed: () {},
-                            icon: const Icon(Icons.emoji_emotions_outlined),
-                          ),
-                        ),
-                        style: const TextStyle(color: Colors.black),
+                padding: EdgeInsets.symmetric(horizontal: width * .03),
+                child: TextFormField(
+                  controller: messageController,
+                  decoration: InputDecoration(
+                      hintText: 'Write yur message',
+                      hintStyle: GoogleFonts.nunito(
+                          textStyle: TextStyle(
+                        fontSize: 13,
+                      )),
+                      fillColor: Colors.white,
+                      filled: true,
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(50),
+                        borderSide: BorderSide.none,
                       ),
-                    ),
-                    const SizedBox(width: 10),
-                    FloatingActionButton(
-                      heroTag: "send_button",
-                      onPressed: () {
-                        if (messageController.text.isNotEmpty) {
-                          messageProvider
-                              .sendMessage(messageController.text.trim());
-                          messageController.clear();
-                        }
-                      },
-                      backgroundColor: const Color(0XFF25D366),
-                      foregroundColor: Colors.white,
-                      child: const Icon(Icons.send),
-                    )
-                  ],
+                      suffixIcon: GestureDetector(
+                          onTap: () {
+                            if (messageController.text.isNotEmpty) {
+                              messageProvider
+                                  .sendMessage(messageController.text.trim());
+                              messageController.clear();
+                            }
+                          },
+                          child: Image.asset('assets/icons/sendbutton.png'))),
                 ),
               ),
+
               const SizedBox(height: 20),
             ],
           );
@@ -178,11 +159,7 @@ class _ChatScreenState extends State<ChatScreen> {
       // mainAxisAlignment: MainAxisAlignment.start,
       crossAxisAlignment: CrossAxisAlignment.center,
       children: [
-        CircleAvatar(
-          radius: 25,
-          backgroundColor: Colors.transparent,
-          backgroundImage: AssetImage('assets\icons\botIcon.png'),
-        ),
+        Image.asset('assets/icons/botIcon.png'),
         SizedBox(
           width: width * .02,
         ),
@@ -224,88 +201,4 @@ class _ChatScreenState extends State<ChatScreen> {
       ],
     );
   }
-
-  // Widget _myMessages(double height, double width, String message) {
-  //   return ConstrainedBox(
-  //     constraints: BoxConstraints(
-  //       maxWidth: width * 0.6,
-  //     ),
-  //     child: Container(
-  //       padding: EdgeInsets.all(20),
-  //       margin: EdgeInsets.symmetric(vertical: 5),
-  //       decoration: BoxDecoration(
-  //           color: Colors.blue,
-  //           borderRadius: BorderRadius.only(
-  //               topLeft: Radius.circular(20),
-  //               bottomLeft: Radius.circular(20),
-  //               bottomRight: Radius.circular(20))),
-  //       child: Text(
-  //         message,
-  //         style: GoogleFonts.inter(
-  //           fontSize: 14,
-  //           color: Colors.white,
-  //           fontWeight: FontWeight.w400,
-  //         ),
-  //       ),
-  //     ),
-  //   );
-  // }
-
-  // Widget _otherMessages(double height, double width, String message) {
-  //   return Row(
-  //     crossAxisAlignment: CrossAxisAlignment.end,
-  //     children: [
-  //       CircleAvatar(
-  //         radius: 10,
-  //         backgroundColor: Colors.transparent,
-  //         backgroundImage: AssetImage(widget.image),
-  //       ),
-  //       SizedBox(
-  //         width: width * .01,
-  //       ),
-  //       ConstrainedBox(
-  //         constraints: BoxConstraints(
-  //           maxWidth: width * 0.6,
-  //         ),
-  //         child: Container(
-  //           padding: EdgeInsets.all(20),
-  //           margin: EdgeInsets.symmetric(vertical: 5),
-  //           decoration: BoxDecoration(
-  //               color: Colors.white,
-  //               borderRadius: BorderRadius.only(
-  //                   topLeft: Radius.circular(20),
-  //                   topRight: Radius.circular(20),
-  //                   bottomRight: Radius.circular(20))),
-  //           child: Text(
-  //             message,
-  //             style: GoogleFonts.inter(
-  //               fontSize: 14,
-  //               color: Colors.black,
-  //               fontWeight: FontWeight.w400,
-  //             ),
-  //           ),
-  //         ),
-  //       ),
-  //     ],
-  //   );
-  // }
-
-  // Widget _messageField(double height, double width) {
-  //   return TextFormField(
-  //     controller: _messageController,
-  //     decoration: InputDecoration(
-  //         hintText: 'Write yur message',
-  //         hintStyle: GoogleFonts.nunito(
-  //             textStyle: TextStyle(
-  //           fontSize: 13,
-  //         )),
-  //         fillColor: Colors.white,
-  //         filled: true,
-  //         border: OutlineInputBorder(
-  //           borderRadius: BorderRadius.circular(50),
-  //           borderSide: BorderSide.none,
-  //         ),
-  //         suffixIcon: Image.asset('assets/icons/send.png')),
-  //   );
-  // }
 }
