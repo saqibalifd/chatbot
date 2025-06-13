@@ -1,9 +1,14 @@
 import 'package:chatbot/constants/app_colors.dart';
+import 'package:chatbot/constants/app_icons.dart';
+import 'package:chatbot/constants/app_images.dart';
 import 'package:chatbot/provider/message_provider.dart';
+import 'package:chatbot/provider/theme_provider.dart';
+import 'package:chatbot/theme/theme_data.dart';
 import 'package:chatbot/widgets/empty_chat_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:chat_bubbles/chat_bubbles.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:loading_animation_widget/loading_animation_widget.dart';
 import 'package:provider/provider.dart';
 
 class ChatScreen extends StatefulWidget {
@@ -40,6 +45,11 @@ class _ChatScreenState extends State<ChatScreen> {
     final size = MediaQuery.of(context).size;
     final height = size.height;
     final width = size.width;
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+    final themeData = themeProvider.isDarkMode
+        ? ApparenceKitThemeData.dark()
+        : ApparenceKitThemeData.light();
+
     return Scaffold(
       body: Consumer<MessageProvider>(
         builder: (context, messageProvider, child) {
@@ -47,8 +57,13 @@ class _ChatScreenState extends State<ChatScreen> {
             children: [
               Padding(
                 padding: EdgeInsets.only(
-                    top: height * .03, left: width * .05, right: width * .05),
-                child: _messageAppBar(width),
+                    top: height * .05, left: width * .05, right: width * .05),
+                child: _messageAppBar(width, height),
+              ),
+              Container(
+                width: double.infinity,
+                height: height * .001,
+                color: AppColors.greyColor,
               ),
               Expanded(
                 child: messageProvider.messages.isEmpty
@@ -77,7 +92,7 @@ class _ChatScreenState extends State<ChatScreen> {
                                   isSender: isUser,
                                   color: isUser
                                       ? Colors.blue
-                                      : const Color(0XFFEEEEEE),
+                                      : AppColors.primaryColor,
                                   seen: true,
                                   text: message['text'],
                                   tail: true,
@@ -108,17 +123,15 @@ class _ChatScreenState extends State<ChatScreen> {
               // Typing indicator
               if (messageProvider.isTyping)
                 Padding(
-                  padding: const EdgeInsets.all(8.0),
+                  padding:
+                      const EdgeInsets.symmetric(vertical: 8, horizontal: 20),
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.start,
                     children: [
-                      Text(
-                        messageProvider.responseText,
-                        style: const TextStyle(
-                          fontSize: 16.0,
-                          color: Colors.grey,
-                        ),
-                      )
+                      LoadingAnimationWidget.staggeredDotsWave(
+                        color: AppColors.blue,
+                        size: 20,
+                      ),
                     ],
                   ),
                 ),
@@ -129,12 +142,12 @@ class _ChatScreenState extends State<ChatScreen> {
                 child: TextFormField(
                   controller: messageController,
                   decoration: InputDecoration(
-                      hintText: 'Write yur message',
+                      hintText: 'Write your message',
                       hintStyle: GoogleFonts.nunito(
                           textStyle: TextStyle(
                         fontSize: 13,
                       )),
-                      fillColor: Colors.white,
+                      fillColor: themeData.colors.primary,
                       filled: true,
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(50),
@@ -148,7 +161,7 @@ class _ChatScreenState extends State<ChatScreen> {
                               messageController.clear();
                             }
                           },
-                          child: Image.asset('assets/icons/sendbutton.png'))),
+                          child: Image.asset(AppIcons.sendButton))),
                 ),
               ),
 
@@ -160,49 +173,63 @@ class _ChatScreenState extends State<ChatScreen> {
     );
   }
 
-  Widget _messageAppBar(double width) {
+  Widget _messageAppBar(double width, double height) {
+    final themeProvider = Provider.of<ThemeProvider>(context, listen: false);
+
     return Row(
-      // mainAxisAlignment: MainAxisAlignment.start,
-      crossAxisAlignment: CrossAxisAlignment.center,
+      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Image.asset('assets/icons/botIcon.png'),
-        SizedBox(
-          width: width * .02,
-        ),
-        Column(
-          mainAxisAlignment: MainAxisAlignment.start,
-          crossAxisAlignment: CrossAxisAlignment.start,
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            Text(
-              'Chat Bot',
-              overflow: TextOverflow.ellipsis,
-              maxLines: 1,
-              style: GoogleFonts.inter(
-                  fontSize: 20,
-                  fontWeight: FontWeight.w600,
-                  color: AppColors.blue),
+            Image.asset(
+              AppImages.botProfile,
+              height: height * .08,
             ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.center,
-              crossAxisAlignment: CrossAxisAlignment.center,
+            SizedBox(
+              width: width * .02,
+            ),
+            Column(
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                CircleAvatar(
-                  radius: 4,
-                  backgroundColor: Color(0xff3ABF38),
-                ),
-                SizedBox(
-                  width: width * .01,
-                ),
                 Text(
-                  'Online',
-                  style: GoogleFonts.nunito(
-                      fontSize: 17,
-                      fontWeight: FontWeight.w400,
-                      color: Color(0xff3ABF38)),
+                  'Chat Bot',
+                  overflow: TextOverflow.ellipsis,
+                  maxLines: 1,
+                  style: GoogleFonts.inter(
+                      fontSize: 20,
+                      fontWeight: FontWeight.w600,
+                      color: AppColors.blue),
+                ),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  children: [
+                    CircleAvatar(
+                      radius: 4,
+                      backgroundColor: Color(0xff3ABF38),
+                    ),
+                    SizedBox(
+                      width: width * .01,
+                    ),
+                    Text(
+                      'Online',
+                      style: GoogleFonts.nunito(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w400,
+                          color: Color(0xff3ABF38)),
+                    ),
+                  ],
                 ),
               ],
             ),
           ],
+        ),
+        IconButton(
+          icon: Icon(
+              themeProvider.isDarkMode ? Icons.light_mode : Icons.dark_mode),
+          onPressed: () => themeProvider.toggleTheme(),
         ),
       ],
     );

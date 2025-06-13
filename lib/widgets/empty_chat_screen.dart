@@ -1,6 +1,5 @@
 // ignore_for_file: sort_child_properties_last
 
-import 'package:chatbot/constants/app_colors.dart';
 import 'package:chatbot/constants/app_icons.dart';
 
 import 'package:flutter/material.dart';
@@ -87,8 +86,6 @@ class EmptyChatWidget extends StatelessWidget {
               height,
               width,
             ),
-
-            // 3rd section
           ],
         ),
       ),
